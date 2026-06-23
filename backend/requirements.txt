@@ -1,0 +1,40 @@
+# FastAPI & server
+fastapi
+uvicorn[standard]
+
+# Database / Supabase clientz
+supabase
+
+# Environment handling
+python-dotenv
+
+# Cloudinary image upload
+cloudinary
+
+# Machine‑learning / TensorFlow (used in classifier & classifier2)
+tensorflow
+numpy
+
+# OpenCV (used in classifier for image preprocessing)
+opencv-python
+
+# Torch & torchvision (used in embedding service)
+
+
+# Pillow (image handling)
+Pillow
+
+# Requests (used in embedding service to fetch remote images)
+requests
+
+# Google Generative AI (Gemini model)
+google-generativeai
+
+# Cloudinary
+cloudinary
+
+# Pydantic (data models)
+pydantic
+
+# Optional – for PostgreSQL dialect if you ever run raw SQL locally
+psycopg2-binary
