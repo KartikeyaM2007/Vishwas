@@ -161,3 +161,58 @@ User Query:
             "error": "Failed to generate analytics via Gemini.",
             "details": error_str
         }
+
+def analyze_voice_report(transcript: str, latitude: float, longitude: float):
+    """
+    Analyzes a voice transcript using Google Gemini and returns a structured JSON response.
+    """
+    prompt = f"""
+You are an AI assistant for a civic issue management platform called Community Hero.
+Your task is to analyze a voice transcript from a citizen reporting a civic issue and return a STRICT JSON object.
+
+Transcript: "{transcript}"
+Latitude: {latitude}
+Longitude: {longitude}
+
+Based on the transcript, extract the details and generate a JSON object with the following keys EXACTLY:
+- "clean_summary": A clear, elaborated, and professional summary of the issue.
+- "detected_category": Must be one of ["pothole", "garbage", "streetlight", "water_leak", "drainage", "road_damage", "public_safety", "other"]
+- "urgency_score": An integer from 1 to 10 (10 being most urgent).
+- "urgency_label": Must be one of ["low", "medium", "high", "critical"]
+- "department": Must be one of ["Road Works", "Sanitation", "Water Department", "Electricity Department", "Public Safety", "General Civic Team"]
+- "admin_action_recommendation": A short recommendation for the admin on what to do next.
+- "citizen_friendly_status_message": A reassuring message to show the citizen.
+- "duplicate_check_keywords": An array of 2-3 keywords to help with duplicate detection.
+- "safety_notes": Any immediate safety risks, or "None observed".
+
+Return ONLY valid JSON. No markdown formatting blocks around it. Do not include ```json tags.
+"""
+
+    try:
+        response = model.generate_content(prompt)
+        text = response.text
+        
+        # Clean markdown if present
+        text = re.sub(r"```json|```", "", text).strip()
+        
+        # Extract JSON safely
+        match = re.search(r'\{[\s\S]*\}', text)
+        if match:
+            return json.loads(match.group())
+        else:
+            raise ValueError("No JSON found in response.")
+            
+    except Exception as e:
+        print(f"Error in Gemini analyze_voice_report: {e}")
+        # Return a safe default fallback
+        return {
+            "clean_summary": f"Reported issue via voice. AI analysis failed.",
+            "detected_category": "other",
+            "urgency_score": 5,
+            "urgency_label": "medium",
+            "department": "General Civic Team",
+            "admin_action_recommendation": "Manual review required due to AI fallback.",
+            "citizen_friendly_status_message": "We have received your voice report and are reviewing it.",
+            "duplicate_check_keywords": ["voice"],
+            "safety_notes": "Unable to assess automatically."
+        }

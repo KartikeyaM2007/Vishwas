@@ -1,11 +1,12 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from services.cloudinary import upload_image
-from services.gemini_service import analyze_civic_issue, generate_sql_and_chart
+from services.gemini_service import analyze_civic_issue, generate_sql_and_chart, analyze_voice_report
 from services.supabase import insert_complaint
 from model.classifier import predict_and_embed
 from datetime import datetime
 from services.supabase import run_sql
 from model.models import QueryRequest
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi import Request
@@ -47,6 +48,14 @@ async def upload_details(
     image: UploadFile = File(...)
 ):
 
+    # Validation
+    if not username or not username.strip():
+        raise HTTPException(status_code=400, detail="Username cannot be empty")
+    if latitude < -90 or latitude > 90 or longitude < -180 or longitude > 180:
+        raise HTTPException(status_code=400, detail="Invalid latitude or longitude")
+    if not image or not image.filename:
+        raise HTTPException(status_code=400, detail="Missing image")
+
     # 1️⃣ Save image locally (needed for model)
     file_location = f"temp_{image.filename}"
     with open(file_location, "wb") as f:
@@ -57,10 +66,7 @@ async def upload_details(
 
     # ❌ If not pothole → reject early
     if result["class"] != "pothole":
-        return {
-            "is_true_image": False,
-            "message": "No valid issue detected"
-        }
+        raise HTTPException(status_code=400, detail="No valid issue detected in the image")
 
     # 3️⃣ Upload image to Cloudinary
     image_url = upload_image(open(file_location, "rb"))
@@ -199,14 +205,14 @@ async def get_all_complaints():
     except Exception as e:
         error_msg = str(e)
         if "relation \"public.complaints\" does not exist" in error_msg or "PGRST205" in error_msg:
-            return {
-                "error": "Supabase connected, but complaints table missing. Run docs/supabase_schema.sql in Supabase SQL Editor.",
-                "details": error_msg
-            }
-        return {
-            "error": "Failed to fetch complaints from Supabase.",
-            "details": error_msg
-        }
+            raise HTTPException(
+                status_code=503,
+                detail="Supabase connected, but complaints table missing. Run docs/supabase_schema.sql in Supabase SQL Editor."
+            )
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch complaints from Supabase. {error_msg}"
+        )
 
 
 @app.post("/analyze")
@@ -217,11 +223,10 @@ async def analyze(request: QueryRequest):
         # 1. LLM via Gemini
         result = generate_sql_and_chart(request.query)
         if "error" in result:
-            return {
-                "success": False,
-                "error": result["error"],
-                "details": result.get("details", "")
-            }
+            raise HTTPException(
+                status_code=400,
+                detail=f"Gemini Analysis Failed: {result['error']} - {result.get('details', '')}"
+            )
             
         sql = result["sql"]
         chart = result["chart"]
@@ -238,10 +243,7 @@ async def analyze(request: QueryRequest):
         }
 
     except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
+        raise HTTPException(status_code=500, detail=str(e))
 
 # -------------------------
 # COMMUNITY HERO ENDPOINTS
@@ -268,8 +270,10 @@ async def confirm_complaint(complaint_id: int):
         }).eq("id", complaint_id).execute()
         
         return {"success": True, "community_confirmations": new_confirmations, "priority_score": new_priority}
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": "Internal Server Error", "details": str(e)}
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
 @app.post("/complaints/{complaint_id}/duplicate")
@@ -287,8 +291,10 @@ async def mark_duplicate(complaint_id: int):
         }).eq("id", complaint_id).execute()
         
         return {"success": True, "duplicate_reports": new_duplicates}
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": "Internal Server Error", "details": str(e)}
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
 @app.get("/complaints/{complaint_id}")
@@ -298,8 +304,10 @@ async def get_complaint(complaint_id: int):
         if not res.data:
             raise HTTPException(status_code=404, detail="Complaint not found")
         return {"success": True, "data": res.data[0]}
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": "Internal Server Error", "details": str(e)}
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 # -------------------------
 # ✅ Update Complaint (RESOLVED IMAGE VALIDATION)
@@ -349,4 +357,67 @@ async def update_complaint(
 
     except Exception as e:
         return {"success": False, "error": str(e)}
-    
+
+# -------------------------
+# VAPI VOICE REPORTING API
+# -------------------------
+
+class VoiceReportRequest(BaseModel):
+    transcript: str
+    latitude: float = 0.0
+    longitude: float = 0.0
+    username: str = "voice_user"
+
+@app.post("/voice-report")
+async def voice_report(request: VoiceReportRequest):
+    if not request.transcript or not request.transcript.strip():
+        raise HTTPException(status_code=400, detail="Transcript cannot be empty")
+        
+    try:
+        # 1. LLM via Gemini to normalize voice transcript
+        llm_result = analyze_voice_report(
+            request.transcript,
+            request.latitude,
+            request.longitude
+        )
+
+        description = llm_result.get("clean_summary", request.transcript)
+        issue_type = llm_result.get("detected_category", "other")
+        urgency_score = llm_result.get("urgency_score", 5)
+
+        # 2. Add "source": "voice" to ai_metadata
+        llm_result["source"] = "voice"
+
+        # 3. DB Insert
+        data = {
+            "username": request.username,
+            "issue_type": issue_type,
+            "latitude": request.latitude,
+            "longitude": request.longitude,
+            "severity": urgency_score,  # No ML model, use urgency as severity
+            "complaint_desc": description,
+            "image_url": "https://res.cloudinary.com/demo/image/upload/sample.jpg", # Fallback image
+            "embedding": [0.0] * 1280,  # Empty embedding
+            "upvotes": 1,
+            "status": "pending",
+            "submitted_at": datetime.utcnow().isoformat(),
+            "urgency_score": urgency_score,
+            "urgency_label": llm_result.get("urgency_label", "medium"),
+            "department": llm_result.get("department", "General Civic Team"),
+            "admin_action_recommendation": llm_result.get("admin_action_recommendation", ""),
+            "ai_metadata": llm_result,
+            "community_confirmations": 0,
+            "duplicate_reports": 0,
+            "priority_score": urgency_score * 2.0  # Simple priority calculation for voice
+        }
+
+        # Store in DB
+        res = supabase.table("complaints").insert(data).execute()
+        
+        if not res.data:
+            raise Exception("Failed to insert into Supabase")
+
+        return res.data[0]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process voice report: {str(e)}")

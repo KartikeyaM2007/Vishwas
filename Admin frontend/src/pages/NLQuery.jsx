@@ -32,6 +32,8 @@ const NLQuery = () => {
   const [isListening, setIsListening] = useState(false);
   const { theme } = useTheme();
 
+  const [error, setError] = useState(null);
+
   const axesColor = theme === 'dark' ? '#9ca3af' : '#64748b';
   const gridColor = theme === 'dark' ? '#374151' : '#e2e8f0';
 
@@ -41,12 +43,14 @@ const NLQuery = () => {
 
     setIsAnalyzing(true);
     setResult(null);
+    setError(null);
 
     try {
       const response = await analyzeQuery(query);
       setResult(response);
-    } catch (error) {
-      console.error("Analysis failed:", error);
+    } catch (err) {
+      console.error("Analysis failed:", err);
+      setError(err.message || "Failed to analyze query. Is the backend running?");
     } finally {
       setIsAnalyzing(false);
     }
@@ -268,6 +272,20 @@ const NLQuery = () => {
               <Loader className="spinner" size={48} color="var(--primary)" />
               <h2>Analyzing Data...</h2>
               <p>Translating query into SQL and generating visualization</p>
+            </motion.div>
+          )}
+
+          {error && !isAnalyzing && (
+            <motion.div 
+              key="error"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="glass-card error-state text-danger p-4"
+              style={{ textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+            >
+              <h3>⚠️ Analysis Error</h3>
+              <p>{error}</p>
             </motion.div>
           )}
 

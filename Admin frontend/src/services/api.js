@@ -3,7 +3,11 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000
 export const fetchComplaints = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/complaints`);
-    if (!response.ok) throw new Error('Failed to fetch complaints');
+    if (!response.ok) {
+      let errData = {};
+      try { errData = await response.json(); } catch(e){}
+      throw new Error(errData.detail || errData.error || 'Failed to fetch complaints');
+    }
     return await response.json();
   } catch (error) {
     console.error("Error fetching complaints:", error);
@@ -21,7 +25,11 @@ export const analyzeQuery = async (query) => {
       body: JSON.stringify({ query })
     });
     
-    if (!response.ok) throw new Error('Failed to analyze query');
+    if (!response.ok) {
+      let errData = {};
+      try { errData = await response.json(); } catch(e){}
+      throw new Error(errData.detail || errData.error || 'Failed to analyze query');
+    }
     return await response.json();
   } catch (error) {
     console.error("Error analyzing query:", error);
@@ -31,13 +39,21 @@ export const analyzeQuery = async (query) => {
 
 export const confirmComplaint = async (id) => {
   const response = await fetch(`${API_BASE_URL}/complaints/${id}/confirm`, { method: 'POST' });
-  if (!response.ok) throw new Error('Failed to confirm complaint');
+  if (!response.ok) {
+    let errData = {};
+    try { errData = await response.json(); } catch(e){}
+    throw new Error(errData.detail || errData.error || 'Failed to confirm complaint');
+  }
   return response.json();
 };
 
 export const markDuplicate = async (id) => {
   const response = await fetch(`${API_BASE_URL}/complaints/${id}/duplicate`, { method: 'POST' });
-  if (!response.ok) throw new Error('Failed to mark duplicate');
+  if (!response.ok) {
+    let errData = {};
+    try { errData = await response.json(); } catch(e){}
+    throw new Error(errData.detail || errData.error || 'Failed to mark duplicate');
+  }
   return response.json();
 };
 
@@ -51,7 +67,11 @@ export const updateComplaintStatus = async (id, status, resolvedImageFile) => {
     method: 'PUT',
     body: formData,
   });
-  if (!response.ok) throw new Error('Failed to update status');
+  if (!response.ok) {
+    let errData = {};
+    try { errData = await response.json(); } catch(e){}
+    throw new Error(errData.detail || errData.error || 'Failed to update status');
+  }
   return response.json();
 };
 

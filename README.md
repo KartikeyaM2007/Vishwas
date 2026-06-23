@@ -81,9 +81,14 @@ The system operates in two roles:
 
 ### Admin Web Dashboard (React + Vite)
 - **Geo-spatial map** — React Leaflet with severity-coloured custom SVG markers. Switches between Google Maps (light mode) and CARTO Dark Matter tiles (dark mode) based on theme.
+- **Predictive Hotspot Cards** — Visual impact cards at the top of the map showing metrics like critical complaints, total community confirmations, duplicate reports prevented, and top category, complete with a Gemini Insight generator button.
 - **Slide-in complaint details sidebar** — animated via Framer Motion's spring physics, showing photo, AI description, coordinates, reporter, and submission time.
 - **ML-gated resolution workflow** — admins upload a resolved image; the backend's road quality classifier must confirm the road is clear before the status update commits.
 - **Advanced filtration table** — filter by issue type, status, and severity tier (High/Medium/Low); full-text search across ID, type, description, and username; click-to-sort on any column via `useMemo`.
+- **Public Community Feed** — Citizen-facing feed `/community` displaying active civic issues, with capabilities for citizens to upvote/confirm or mark duplicate issues.
+- **Citizen Leaderboard** — Gamified `/leaderboard` showing top reporters, assigning dynamic badges (Community Hero, Streetlight Watcher, Sanitation Hero), and measuring total confirmations.
+- **Voice Reporting via Vapi** — An optional voice intake channel (`/voice-report`) utilizing Vapi.ai for real-time conversation parsing, with Gemini continuing to act as the core analytical engine to structure the data.
+- **Optional Video-Ready Schema** — The Supabase schema supports `media_url` and `media_type` natively for future video uploads.
 - **CSV export** — exports the current filtered view as a properly escaped CSV file, dated and named automatically.
 - **Natural-language analytics** — voice or text input, multilingual (auto-translated via Google Translate API), generates SQL, executes it, and renders a themed Recharts chart (bar, line, or area).
 - **Neumorphic custom alert system** — replaces native `window.alert()` with a designed notification component supporting `success`, `error`, `warning`, and `info` states.

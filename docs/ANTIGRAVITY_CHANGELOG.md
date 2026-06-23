@@ -4,6 +4,57 @@ Every change made to the codebase is recorded here.
 
 ## Change Entry
 
+**Date/time:** 2026-06-23T13:35:00Z
+**Files changed:**
+- `Admin frontend/src/pages/CommunityFeed.jsx` (New)
+- `Admin frontend/src/pages/Leaderboard.jsx` (New)
+- `Admin frontend/src/pages/MapInterface.jsx`
+- `Admin frontend/src/App.jsx`
+- `Admin frontend/src/components/Sidebar.jsx`
+- `docs/supabase_schema.sql`
+- `README.md`
+- `docs/IMPLEMENTATION_REPORT.md`
+- `docs/HANDOFF_FOR_CHATGPT.md`
+**What changed:** 
+1. Created a public `/community` feed showing citizen reports.
+2. Created `/leaderboard` for citizen gamification and badges.
+3. Added Predictive Hotspot cards to `MapInterface.jsx` with Gemini Insight.
+4. Added routes and sidebar links for the new pages.
+5. Added `media_url` and `media_type` to `supabase_schema.sql` to support future video proof.
+6. Updated documentation to reflect these hackathon-ready enhancements.
+**Why changed:** To strengthen hackathon alignment by demonstrating higher civic engagement (gamification, community validation) and better administrative insights without risking existing backend stability.
+**Before behavior:** Admins only had a raw map and table. Citizens lacked a dedicated feed or leaderboard.
+**After behavior:** Highly visible public accountability features (Feed and Leaderboard) plus rich predictive cards on the admin map.
+**Risk or follow-up:** None. These are low-risk frontend-only additions that safely consume existing APIs.
+
+---
+
+## Change Entry
+
+**Date/time:** 2026-06-23T13:13:00Z
+**Files changed:**
+- `Admin frontend/package.json`
+- `Admin frontend/.env.example`
+- `Admin frontend/src/App.jsx`
+- `Admin frontend/src/components/Sidebar.jsx`
+- `Admin frontend/src/components/VapiVoiceReporter.jsx` (New)
+- `Admin frontend/src/pages/VoiceReport.jsx` (New)
+- `backend/Team-Try/services/gemini_service.py`
+- `backend/Team-Try/main.py`
+**What changed:** 
+1. Added `@vapi-ai/web` to Admin frontend for optional voice reporting.
+2. Added `/voice-report` route and UI to React app with manual fallback box.
+3. Created `POST /voice-report` backend endpoint.
+4. Added `analyze_voice_report` in Gemini service to normalize voice transcript into structured schema.
+**Why changed:** Add optional Vapi-powered voice reporting for improved accessibility and agentic depth.
+**Before behavior:** No voice input. Users had to manually type or rely on image ML mapping.
+**After behavior:** Voice reports seamlessly translated into structured civic issues via Gemini.
+**Risk or follow-up:** Vapi keys are purely optional. App works perfectly without them via fallback input box.
+
+---
+
+## Change Entry
+
 **Date/time:** 2026-06-23T10:45:00Z
 **Files changed:** 
 - `backend/Team-Try/model/classifier.py`

@@ -13,6 +13,8 @@ CREATE TABLE complaints (
     complaint_desc TEXT,
     image_url TEXT,
     resolved_image_url TEXT,
+    media_url TEXT,
+    media_type TEXT DEFAULT 'image',
     embedding vector(1280), -- or jsonb if pgvector is not enabled
     upvotes INTEGER DEFAULT 1,
     status TEXT DEFAULT 'pending',

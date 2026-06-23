@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Filter, Sparkles, AlertTriangle } from 'lucide-react';
+import { Home, Filter, Sparkles, AlertTriangle, Mic, Users, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import './Sidebar.css';
@@ -12,6 +12,9 @@ const Sidebar = () => {
     { path: '/', label: 'Map Overview', icon: Home },
     { path: '/filter', label: 'Complaint Data', icon: Filter },
     { path: '/analyze', label: 'AI Analysis', icon: Sparkles },
+    { path: '/voice-report', label: 'Voice Report', icon: Mic },
+    { path: '/community', label: 'Community Feed', icon: Users },
+    { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
   ];
 
   return (
