@@ -13,9 +13,15 @@ class TimelineStepper extends StatelessWidget {
   Color _colorForStatus(IssueStatus s) {
     switch (s) {
       case IssueStatus.open:
-        return AppTheme.statusOpen;
+        return const Color(0xFFD97706);
+      case IssueStatus.manualReview:
+        return const Color(0xFFEA580C);
+      case IssueStatus.approved:
+        return const Color(0xFF0284C7);
+      case IssueStatus.needsMoreProof:
+        return const Color(0xFF9333EA);
       case IssueStatus.inProgress:
-        return AppTheme.statusInProgress;
+        return const Color(0xFF2563EB);
       case IssueStatus.resolved:
         return AppTheme.statusResolved;
       case IssueStatus.rejected:
@@ -26,7 +32,13 @@ class TimelineStepper extends StatelessWidget {
   IconData _iconForStatus(IssueStatus s) {
     switch (s) {
       case IssueStatus.open:
-        return Icons.flag_rounded;
+        return Icons.schedule_rounded;
+      case IssueStatus.manualReview:
+        return Icons.manage_search_rounded;
+      case IssueStatus.approved:
+        return Icons.verified_rounded;
+      case IssueStatus.needsMoreProof:
+        return Icons.add_photo_alternate_outlined;
       case IssueStatus.inProgress:
         return Icons.engineering_rounded;
       case IssueStatus.resolved:
@@ -63,7 +75,7 @@ class TimelineStepper extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.15),
+                        color: color.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: color, width: 2),
                       ),
@@ -73,7 +85,7 @@ class TimelineStepper extends StatelessWidget {
                       Expanded(
                         child: Container(
                           width: 2,
-                          color: scheme.outlineVariant.withOpacity(0.4),
+                          color: scheme.outlineVariant.withValues(alpha: 0.4),
                           margin: const EdgeInsets.symmetric(vertical: 4),
                         ),
                       ),

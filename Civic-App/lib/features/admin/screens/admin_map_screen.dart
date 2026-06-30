@@ -7,7 +7,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/widgets/status_pill.dart';
 import '../../issues/providers/issue_providers.dart';
-import '../../issues/repositories/issue_repository.dart';
 import '../../issues/models/issue.dart';
 import '../../issues/models/issue_status.dart';
 
@@ -328,10 +327,13 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
 
   Color _statusColor(IssueStatus s) {
     switch (s) {
-      case IssueStatus.open: return const Color(0xFFE53935);
-      case IssueStatus.inProgress: return const Color(0xFFF57C00);
+      case IssueStatus.open: return const Color(0xFFF59E0B);
+      case IssueStatus.manualReview: return const Color(0xFFF97316);
+      case IssueStatus.approved: return const Color(0xFF0EA5E9);
+      case IssueStatus.needsMoreProof: return const Color(0xFFA855F7);
+      case IssueStatus.inProgress: return const Color(0xFF2563EB);
       case IssueStatus.resolved: return const Color(0xFF2E7D32);
-      case IssueStatus.rejected: return const Color(0xFF616161);
+      case IssueStatus.rejected: return const Color(0xFFDC2626);
     }
   }
 }

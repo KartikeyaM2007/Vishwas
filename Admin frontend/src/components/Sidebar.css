@@ -33,6 +33,7 @@
   font-size: 1.25rem;
   background: linear-gradient(to right, #38bdf8, #818cf8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
 }
@@ -82,20 +83,20 @@
 
 .nav-item-content:hover:not(.active) {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-glass-hover);
 }
 
 .nav-item-content.active {
-  color: #a5b4fc;
+  color: var(--primary);
 }
 
 .nav-icon {
-  color: #9ca3af;
+  color: var(--text-muted);
   transition: color 0.3s ease;
 }
 
 .nav-item-content.active .nav-icon {
-  color: #818cf8;
+  color: var(--primary);
 }
 
 .sidebar-footer {
@@ -135,7 +136,7 @@
 
 .user-email {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

@@ -2,6 +2,9 @@
 
 enum IssueStatus {
   open,
+  manualReview,
+  approved,
+  needsMoreProof,
   inProgress,
   resolved,
   rejected;
@@ -9,7 +12,13 @@ enum IssueStatus {
   String get label {
     switch (this) {
       case IssueStatus.open:
-        return 'Open';
+        return 'Pending';
+      case IssueStatus.manualReview:
+        return 'Manual Review';
+      case IssueStatus.approved:
+        return 'Approved';
+      case IssueStatus.needsMoreProof:
+        return 'Needs More Proof';
       case IssueStatus.inProgress:
         return 'In Progress';
       case IssueStatus.resolved:
@@ -22,7 +31,13 @@ enum IssueStatus {
   String get value {
     switch (this) {
       case IssueStatus.open:
-        return 'open';
+        return 'pending';
+      case IssueStatus.manualReview:
+        return 'manual_review';
+      case IssueStatus.approved:
+        return 'approved';
+      case IssueStatus.needsMoreProof:
+        return 'needs_more_proof';
       case IssueStatus.inProgress:
         return 'in_progress';
       case IssueStatus.resolved:
@@ -34,6 +49,17 @@ enum IssueStatus {
 
   static IssueStatus fromValue(String value) {
     switch (value) {
+      case 'pending':
+      case 'open':
+        return IssueStatus.open;
+      case 'manual_review':
+        return IssueStatus.manualReview;
+      case 'approved':
+      case 'verified':
+      case 'admin_approved':
+        return IssueStatus.approved;
+      case 'needs_more_proof':
+        return IssueStatus.needsMoreProof;
       case 'in_progress':
         return IssueStatus.inProgress;
       case 'resolved':

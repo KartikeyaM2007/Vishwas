@@ -115,28 +115,28 @@ const MapInterface = () => {
       <div style={{ position: 'absolute', top: '20px', left: '20px', right: '20px', zIndex: 1000, pointerEvents: 'none' }}>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', pointerEvents: 'auto' }}>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
               <Activity size={14} /> Total Issues
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f8fafc', marginTop: '4px' }}>{total}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main)', marginTop: '4px' }}>{total}</div>
           </div>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fca5a5', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
               <AlertTriangle size={14} /> Critical
             </div>
             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ef4444', marginTop: '4px' }}>{critical}</div>
           </div>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
               <TrendingUp size={14} /> Top Category
             </div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#60a5fa', marginTop: '4px', textTransform: 'capitalize' }}>{mostReported}</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#3b82f6', marginTop: '4px', textTransform: 'capitalize' }}>{mostReported}</div>
           </div>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
               <Building size={14} /> Confirmations
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#34d399', marginTop: '4px' }}>{totalConfirmations}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981', marginTop: '4px' }}>{totalConfirmations}</div>
           </div>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <button 
@@ -152,7 +152,7 @@ const MapInterface = () => {
         </div>
         {insight && (
           <div className="glass-panel" style={{ marginTop: '1rem', padding: '1rem', borderRadius: '12px', maxWidth: '600px', pointerEvents: 'auto', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)' }}>
-            <p style={{ color: '#e0e7ff', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>
+            <p style={{ color: 'var(--text-main)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>
               <strong><Sparkles size={14} style={{ display: 'inline', marginRight: '4px' }} /> Gemini Insight:</strong> {insight}
             </p>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { fetchComplaints } from '../services/api';
 import { Trophy, Award, Star, Shield, TrendingUp } from 'lucide-react';
@@ -90,7 +91,7 @@ const Leaderboard = () => {
           <Trophy color="#fbbf24" /> 
           Citizen Leaderboard
         </h1>
-        <p style={{ color: '#9ca3af' }}>
+        <p style={{ color: 'var(--text-muted)' }}>
           Recognizing the most active and trusted community members.
         </p>
       </header>
@@ -98,16 +99,16 @@ const Leaderboard = () => {
       {/* Top Metrics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f8fafc' }}>{sortedUsers.length}</div>
-          <div style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Active Citizens</div>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{sortedUsers.length}</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Active Citizens</div>
         </div>
         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#34d399' }}>{totalConfirmations}</div>
-          <div style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Community Confirmations</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Community Confirmations</div>
         </div>
         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#60a5fa' }}>{totalResolved}</div>
-          <div style={{ color: '#9ca3af', fontSize: '0.9rem' }}>Issues Resolved</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Issues Resolved</div>
         </div>
       </div>
 
@@ -115,7 +116,7 @@ const Leaderboard = () => {
       <div className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.05)', color: '#9ca3af', fontSize: '0.85rem', textTransform: 'uppercase' }}>
+            <tr style={{ background: 'var(--bg-glass-hover)', color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>
               <th style={{ padding: '1rem' }}>Rank</th>
               <th style={{ padding: '1rem' }}>Citizen</th>
               <th style={{ padding: '1rem' }}>Reports</th>
@@ -127,23 +128,23 @@ const Leaderboard = () => {
             {sortedUsers.map((user, index) => {
               const badges = getBadges(user);
               return (
-                <tr key={user.username} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  <td style={{ padding: '1rem', fontWeight: 'bold', color: index < 3 ? '#fbbf24' : '#f8fafc' }}>
+                <tr key={user.username} style={{ borderTop: '1px solid var(--border-color)' }}>
+                  <td style={{ padding: '1rem', fontWeight: 'bold', color: index < 3 ? '#fbbf24' : 'var(--text-main)' }}>
                     #{index + 1}
                   </td>
-                  <td style={{ padding: '1rem', color: '#f8fafc' }}>{user.username}</td>
+                  <td style={{ padding: '1rem', color: 'var(--text-main)' }}>{user.username}</td>
                   <td style={{ padding: '1rem', color: '#60a5fa', fontWeight: 'bold' }}>{user.reportCount}</td>
                   <td style={{ padding: '1rem', color: '#34d399', fontWeight: 'bold' }}>{user.confirmationsReceived}</td>
                   <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {badges.map(b => (
                       <div key={b.name} title={b.desc} style={{
                         display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px',
-                        background: 'rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '0.75rem', color: '#e2e8f0'
+                        background: 'var(--bg-glass-hover)', borderRadius: '12px', fontSize: '0.75rem', color: 'var(--text-main)'
                       }}>
                         {b.icon} {b.name}
                       </div>
                     ))}
-                    {badges.length === 0 && <span style={{ color: '#64748b', fontSize: '0.8rem' }}>None yet</span>}
+                    {badges.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>None yet</span>}
                   </td>
                 </tr>
               );

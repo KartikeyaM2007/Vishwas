@@ -11,6 +11,66 @@
 
 ---
 
+## Submission Package
+
+**Author:** kartikeya  
+**Selected Problem Statement:** Community Hero - Hyperlocal Problem Solver
+
+This repository contains the complete CityPulse civic-tech platform: a Flutter citizen APK, FastAPI AI backend, Supabase/Cloudinary data layer, and React admin dashboard. The submission-ready project description is available at:
+
+- [Submission Project Description](docs/SUBMISSION_PROJECT_DESCRIPTION.md)
+- [Project Description DOCX](docs/CityPulse_Project_Description_Kartikeya.docx)
+
+> For the required Google Doc submission, upload/import `docs/CityPulse_Project_Description_Kartikeya.docx` into Google Docs and set sharing to "Anyone with the link can view."
+
+### Current Screenshots
+
+**Citizen APK layout**
+
+![Citizen APK home](docs/civic_doc_home_final.png)
+
+![Citizen community feed](docs/civic_community_feed.png)
+
+**Admin dashboard**
+
+![Admin dashboard](docs/admin_dashboard.png)
+
+![Admin review queue](docs/admin_review_queue.png)
+
+### Platform Flow
+
+```mermaid
+flowchart LR
+  A["Citizen APK<br/>Flutter, GPS, proof upload"] --> B["FastAPI Backend<br/>assistant + validation APIs"]
+  B --> C["AI Validation<br/>Gemini + OpenAI fallback"]
+  B --> D["Cloudinary<br/>media storage"]
+  B --> E["Supabase<br/>complaints, comments, rewards"]
+  E --> F["Admin Dashboard<br/>map, review queue, comments"]
+  F --> B
+```
+
+### Report Verification Flow
+
+```mermaid
+sequenceDiagram
+  participant C as Citizen APK
+  participant API as FastAPI Backend
+  participant AI as Gemini/OpenAI
+  participant DB as Supabase
+  participant A as Admin Dashboard
+  C->>API: Describe issue + GPS + photo/video proof
+  API->>AI: Validate evidence
+  AI-->>API: Provider, confidence, recommendation
+  alt Evidence matches and confidence >= 0.65
+    API->>DB: Insert verified report
+  else Low confidence or mismatch
+    API->>DB: Route to manual review
+  end
+  A->>DB: Review, comment, approve, reject, resolve
+```
+
+---
+
 ## Overview
 
 **CityPulse** is a full-stack, AI-augmented civic issue management platform that spans a citizen-facing Flutter mobile app, a FastAPI AI backend, and an admin web dashboard. Citizens photograph road potholes from their phones; the backend validates the image with a custom-trained TensorFlow classifier, scores its severity using a hybrid OpenCV + model approach, generates a structured description via Google Gemini, and persists the complaint to a Supabase (PostgreSQL) database. Administrators resolve issues through a React dashboard that displays complaints geo-spatially on a live map and supports natural-language queries against the complaint database — translating plain English into SQL via a Groq-hosted LLM and rendering results as interactive charts.

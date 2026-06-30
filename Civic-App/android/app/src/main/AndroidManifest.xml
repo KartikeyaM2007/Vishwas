@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Camera permission -->
     <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- Microphone permission for voice-assisted reports -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- Location permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

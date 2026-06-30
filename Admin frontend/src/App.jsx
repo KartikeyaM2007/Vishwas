@@ -7,6 +7,8 @@ import NLQuery from './pages/NLQuery';
 import VoiceReport from './pages/VoiceReport';
 import CommunityFeed from './pages/CommunityFeed';
 import Leaderboard from './pages/Leaderboard';
+import ReviewQueue from './pages/ReviewQueue';
+import ComplaintDetail from './pages/ComplaintDetail';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/analyze" element={<NLQuery />} />
           <Route path="/voice-report" element={<VoiceReport />} />
           <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/review-queue" element={<ReviewQueue />} />
+          <Route path="/complaints/:id" element={<ComplaintDetail />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </Layout>

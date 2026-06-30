@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { analyzeQuery } from '../services/api';
 import { Search, Sparkles, Terminal, ArrowRight, Loader, Mic } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
@@ -34,7 +35,7 @@ const NLQuery = () => {
 
   const [error, setError] = useState(null);
 
-  const axesColor = theme === 'dark' ? '#9ca3af' : '#64748b';
+  const axesColor = theme === 'dark' ? 'var(--text-muted)' : '#64748b';
   const gridColor = theme === 'dark' ? '#374151' : '#e2e8f0';
 
   const handleSearch = async (e) => {

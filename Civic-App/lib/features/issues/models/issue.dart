@@ -17,6 +17,10 @@ class Issue {
   final List<String> attachments; // mock image asset paths or urls
   final int upvotes;
   final bool isUrgent;
+  final String validationStatus;
+  final bool rewardEligible;
+  final String mediaType;
+  final int commentsCount;
 
   const Issue({
     required this.id,
@@ -32,6 +36,10 @@ class Issue {
     this.attachments = const [],
     this.upvotes = 0,
     this.isUrgent = false,
+    this.validationStatus = 'unknown',
+    this.rewardEligible = false,
+    this.mediaType = 'image',
+    this.commentsCount = 0,
   });
 
   Issue copyWith({
@@ -48,6 +56,10 @@ class Issue {
     List<String>? attachments,
     int? upvotes,
     bool? isUrgent,
+    String? validationStatus,
+    bool? rewardEligible,
+    String? mediaType,
+    int? commentsCount,
   }) {
     return Issue(
       id: id ?? this.id,
@@ -63,6 +75,10 @@ class Issue {
       attachments: attachments ?? this.attachments,
       upvotes: upvotes ?? this.upvotes,
       isUrgent: isUrgent ?? this.isUrgent,
+      validationStatus: validationStatus ?? this.validationStatus,
+      rewardEligible: rewardEligible ?? this.rewardEligible,
+      mediaType: mediaType ?? this.mediaType,
+      commentsCount: commentsCount ?? this.commentsCount,
     );
   }
 }

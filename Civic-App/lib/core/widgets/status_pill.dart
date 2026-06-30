@@ -12,22 +12,34 @@ class StatusPill extends StatelessWidget {
   Color _bg(BuildContext context) {
     switch (status) {
       case IssueStatus.open:
-        return AppTheme.statusOpen.withOpacity(0.12);
+        return const Color(0xFFF59E0B).withValues(alpha: 0.14);
+      case IssueStatus.manualReview:
+        return const Color(0xFFF97316).withValues(alpha: 0.14);
+      case IssueStatus.approved:
+        return const Color(0xFF0EA5E9).withValues(alpha: 0.14);
+      case IssueStatus.needsMoreProof:
+        return const Color(0xFFA855F7).withValues(alpha: 0.14);
       case IssueStatus.inProgress:
-        return AppTheme.statusInProgress.withOpacity(0.12);
+        return const Color(0xFF2563EB).withValues(alpha: 0.14);
       case IssueStatus.resolved:
-        return AppTheme.statusResolved.withOpacity(0.12);
+        return AppTheme.statusResolved.withValues(alpha: 0.12);
       case IssueStatus.rejected:
-        return AppTheme.statusRejected.withOpacity(0.12);
+        return AppTheme.statusRejected.withValues(alpha: 0.12);
     }
   }
 
   Color _fg() {
     switch (status) {
       case IssueStatus.open:
-        return AppTheme.statusOpen;
+        return const Color(0xFFD97706);
+      case IssueStatus.manualReview:
+        return const Color(0xFFEA580C);
+      case IssueStatus.approved:
+        return const Color(0xFF0284C7);
+      case IssueStatus.needsMoreProof:
+        return const Color(0xFF9333EA);
       case IssueStatus.inProgress:
-        return AppTheme.statusInProgress;
+        return const Color(0xFF2563EB);
       case IssueStatus.resolved:
         return AppTheme.statusResolved;
       case IssueStatus.rejected:
@@ -38,7 +50,13 @@ class StatusPill extends StatelessWidget {
   IconData _icon() {
     switch (status) {
       case IssueStatus.open:
-        return Icons.radio_button_checked_rounded;
+        return Icons.schedule_rounded;
+      case IssueStatus.manualReview:
+        return Icons.manage_search_rounded;
+      case IssueStatus.approved:
+        return Icons.verified_rounded;
+      case IssueStatus.needsMoreProof:
+        return Icons.add_photo_alternate_outlined;
       case IssueStatus.inProgress:
         return Icons.autorenew_rounded;
       case IssueStatus.resolved:

@@ -18,6 +18,7 @@ for env_path in ENV_PATHS:
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "").strip()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 
 CLOUDINARY_CONFIG = {
     "cloud_name": os.getenv("CLOUD_NAME", "").strip(),

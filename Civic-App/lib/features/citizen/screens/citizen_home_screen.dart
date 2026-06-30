@@ -50,12 +50,10 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final allIssuesAsync = ref.watch(allIssuesProvider);
-    final allIssues = allIssuesAsync.maybeWhen(
-      data: (data) => data,
+    final filtered = allIssuesAsync.maybeWhen(
+      data: (data) => _filtered(data),
       orElse: () => <Issue>[],
     );
-    final filtered = _filtered(allIssues);
-    final nearby = allIssues.take(5).toList();
 
     return Scaffold(
       backgroundColor: scheme.surface,
@@ -69,7 +67,8 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                 color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.location_city_rounded, size: 18, color: scheme.primary),
+              child: Icon(Icons.location_city_rounded,
+                  size: 18, color: scheme.primary),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -86,18 +85,18 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                     return Text(
                       greeting,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        height: 1.1,
-                      ),
+                            fontWeight: FontWeight.w800,
+                            height: 1.1,
+                          ),
                       overflow: TextOverflow.ellipsis,
                     );
                   }),
                   Text(
                     'Report city issues',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                      height: 1.1,
-                    ),
+                          color: scheme.onSurfaceVariant,
+                          height: 1.1,
+                        ),
                   ),
                 ],
               ),
@@ -106,7 +105,8 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () => ref.read(themeControllerProvider.notifier).toggle(context),
+            onPressed: () =>
+                ref.read(themeControllerProvider.notifier).toggle(context),
             icon: AnimatedSwitcher(
               duration: AppConstants.animFast,
               child: Icon(
@@ -146,21 +146,26 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                         child: Material(
                           color: Colors.transparent,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
                             decoration: BoxDecoration(
                               color: scheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: scheme.outlineVariant.withValues(alpha: 0.3),
+                                color: scheme.outlineVariant
+                                    .withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.search_rounded, color: scheme.onSurfaceVariant, size: 20),
+                                Icon(Icons.search_rounded,
+                                    color: scheme.onSurfaceVariant, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Search by area, type...',
-                                  style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 14),
+                                  style: TextStyle(
+                                      color: scheme.onSurfaceVariant,
+                                      fontSize: 14),
                                 ),
                               ],
                             ),
@@ -183,7 +188,8 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                             return FilterChip(
                               label: const Text('All'),
                               selected: _selectedCategoryId == null,
-                              onSelected: (_) => setState(() => _selectedCategoryId = null),
+                              onSelected: (_) =>
+                                  setState(() => _selectedCategoryId = null),
                               showCheckmark: false,
                             );
                           }
@@ -192,7 +198,8 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                             category: cat,
                             selected: _selectedCategoryId == cat.id,
                             onTap: () => setState(() {
-                              _selectedCategoryId = _selectedCategoryId == cat.id ? null : cat.id;
+                              _selectedCategoryId =
+                                  _selectedCategoryId == cat.id ? null : cat.id;
                             }),
                           );
                         },
@@ -201,11 +208,49 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
 
                     const SizedBox(height: 20),
 
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () => context.push('/citizen/assistant'),
+                            icon: const Icon(Icons.support_agent_rounded),
+                            label: const Text('Call Assistant'),
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size(0, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        IconButton.filledTonal(
+                          onPressed: () => context.push('/citizen/leaderboard'),
+                          icon: const Icon(Icons.emoji_events_rounded),
+                          tooltip: 'Rewards',
+                        ),
+                        const SizedBox(width: 6),
+                        IconButton.filledTonal(
+                          onPressed: () => context.push('/citizen/community'),
+                          icon: const Icon(Icons.forum_rounded),
+                          tooltip: 'Community feed',
+                        ),
+                        const SizedBox(width: 6),
+                        IconButton.filledTonal(
+                          onPressed: () => context.push('/citizen/report'),
+                          icon: const Icon(Icons.edit_note_rounded),
+                          tooltip: 'Manual report',
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
                     Text(
                       'Recent Issues',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ],
                 ),
@@ -213,7 +258,7 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
             ),
 
             // Issues list or empty state
-            if (_loading)
+            if (_loading || allIssuesAsync.isLoading)
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 sliver: SliverList(
@@ -221,6 +266,18 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                     (_, __) => const IssueCardSkeleton(),
                     childCount: 3,
                   ),
+                ),
+              )
+            else if (allIssuesAsync.hasError)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: EmptyState(
+                  icon: Icons.cloud_off_rounded,
+                  title: 'Unable to load issues',
+                  subtitle:
+                      'Check that your phone is on the same WiFi and the backend is running at http://192.168.18.165:8000.',
+                  actionLabel: 'Retry',
+                  onAction: () => ref.invalidate(allIssuesProvider),
                 ),
               )
             else if (filtered.isEmpty)
@@ -233,7 +290,8 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
                   subtitle: _selectedCategoryId == null
                       ? 'Be the first to report a problem in your area.'
                       : 'Try a different category or report a new issue.',
-                  actionLabel: _selectedCategoryId != null ? 'Clear filter' : null,
+                  actionLabel:
+                      _selectedCategoryId != null ? 'Clear filter' : null,
                   onAction: _selectedCategoryId != null
                       ? () => setState(() => _selectedCategoryId = null)
                       : null,
@@ -253,9 +311,9 @@ class _CitizenHomeScreenState extends ConsumerState<CitizenHomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/citizen/report'),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Report Issue'),
+        onPressed: () => context.push('/citizen/assistant'),
+        icon: const Icon(Icons.call_rounded),
+        label: const Text('Assistant'),
       ),
     );
   }

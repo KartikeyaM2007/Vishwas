@@ -17,8 +17,6 @@ dependencies:
 
   # Navigation
   go_router: ^14.6.2
-  page_transition: ^2.1.0
-
   # Local Storage
   shared_preferences: ^2.3.3
 
@@ -27,6 +25,8 @@ dependencies:
 
   # HTTP client
   http: ^1.2.0
+  http_parser: ^4.1.2
+  mime: ^2.0.0
 
   # Charts
   fl_chart: ^0.68.0
@@ -57,6 +57,13 @@ dependencies:
 
   # Permissions
   permission_handler: ^11.3.1
+
+  # Mobile voice transcription
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.2
+
+  # Open captured GPS coordinates in Maps
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

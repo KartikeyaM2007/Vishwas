@@ -2,8 +2,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/remote_issue_repository.dart';
 import '../repositories/issue_repository.dart';
+import '../models/complaint_comment.dart';
 import '../models/issue.dart';
 import '../models/issue_status.dart';
+import '../../../core/services/citizen_identity_service.dart';
 
 // ── Repository provider (remote) ─────────────────────────────────────────────
 final remoteIssueRepositoryProvider = Provider<RemoteIssueRepository>((ref) {
@@ -55,11 +57,13 @@ class IssueFilterNotifier extends StateNotifier<IssueFilterState> {
   }
 
   void setCategory(String? categoryId) {
-    state = state.copyWith(clearCategory: categoryId == null, categoryId: categoryId);
+    state = state.copyWith(
+        clearCategory: categoryId == null, categoryId: categoryId);
   }
 
   void setWard(String? wardNumber) {
-    state = state.copyWith(clearWard: wardNumber == null, wardNumber: wardNumber);
+    state =
+        state.copyWith(clearWard: wardNumber == null, wardNumber: wardNumber);
   }
 
   void setSortOrder(SortOrder order) {
@@ -109,7 +113,8 @@ final myIssueFilterProvider =
 // ── My Complaints (async, remote) ─────────────────────────────────────────────
 final myIssuesProvider = FutureProvider.autoDispose<List<Issue>>((ref) async {
   final repo = ref.watch(remoteIssueRepositoryProvider);
-  return repo.fetchMyComplaints();
+  final citizenId = await ref.watch(citizenIdentityProvider.future);
+  return repo.fetchMyComplaints(citizenId);
 });
 
 // ── Dashboard stats (async) ───────────────────────────────────────────────────
@@ -117,6 +122,12 @@ final dashboardProvider =
     FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
   final repo = ref.watch(remoteIssueRepositoryProvider);
   return repo.fetchDashboard();
+});
+
+final leaderboardProvider =
+    FutureProvider.autoDispose<List<LeaderboardEntry>>((ref) async {
+  final repo = ref.watch(remoteIssueRepositoryProvider);
+  return repo.fetchLeaderboard();
 });
 
 // ── Notifications (async) ────────────────────────────────────────────────────
@@ -162,6 +173,9 @@ final searchResultsProvider =
 // ── Single Issue ──────────────────────────────────────────────────────────────
 final issueByIdProvider =
     FutureProvider.autoDispose.family<Issue?, String>((ref, id) async {
+  final repo = ref.watch(remoteIssueRepositoryProvider);
+  final direct = await repo.fetchComplaintById(id);
+  if (direct != null) return direct;
   final all = await ref.watch(allIssuesProvider.future);
   try {
     return all.firstWhere((i) => i.id == id);
@@ -170,7 +184,12 @@ final issueByIdProvider =
   }
 });
 
+final issueCommentsProvider =
+    FutureProvider.autoDispose.family<List<ComplaintComment>, String>(
+        (ref, issueId) async {
+  final repo = ref.watch(remoteIssueRepositoryProvider);
+  return repo.fetchComments(issueId);
+});
+
 // ── Loading flag (kept for backward compat) ───────────────────────────────────
 final isLoadingProvider = StateProvider<bool>((ref) => false);
-
-

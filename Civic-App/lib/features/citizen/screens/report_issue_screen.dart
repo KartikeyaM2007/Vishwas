@@ -14,7 +14,7 @@ import '../../issues/models/issue_status.dart';
 import '../../issues/models/location.dart';
 import '../../issues/providers/issue_providers.dart';
 import '../../issues/repositories/remote_issue_repository.dart';
-import '../../auth/controllers/auth_controller.dart';
+import '../../../core/services/citizen_identity_service.dart';
 
 // ─── Geo-tagged photo ────────────────────────────────────────────────────────
 class _GeoPhoto {
@@ -127,7 +127,8 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Could not detect location. Please enable GPS and try again.'),
+            content: Text(
+                'Could not detect location. Please enable GPS and try again.'),
           ),
         );
       }
@@ -195,7 +196,9 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
 
     if (_currentLat == null || _currentLng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location is required. Go back and detect your location.')),
+        const SnackBar(
+            content: Text(
+                'Location is required. Go back and detect your location.')),
       );
       return;
     }
@@ -203,13 +206,15 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
     setState(() => _classifying = true);
 
     try {
-      final userState = ref.read(authControllerProvider);
       final remoteRepo = ref.read(remoteIssueRepositoryProvider);
+      final citizenId = await ref.read(citizenIdentityProvider.future);
+      debugPrint(
+          'Submitting report for citizen_id: ${maskCitizenId(citizenId)}');
       final result = await remoteRepo.classifyImage(
         imageFile: File(_photos.first.path),
         latitude: _currentLat!,
         longitude: _currentLng!,
-        userName: userState.user?.name,
+        userName: citizenId,
         issueType: _selectedCategory?.id,
       );
 
@@ -243,7 +248,8 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        icon: const Icon(Icons.cancel_rounded, color: Colors.redAccent, size: 48),
+        icon:
+            const Icon(Icons.cancel_rounded, color: Colors.redAccent, size: 48),
         title: const Text('Not a Valid Complaint'),
         content: Text(
           message.isNotEmpty
@@ -378,14 +384,17 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: done
-                          ? const Icon(Icons.check_rounded, color: Colors.white, size: 16)
+                          ? const Icon(Icons.check_rounded,
+                              color: Colors.white, size: 16)
                           : Center(
                               child: Text(
                                 '${idx + 1}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  color: active ? Colors.white : scheme.onSurfaceVariant,
+                                  color: active
+                                      ? Colors.white
+                                      : scheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -396,7 +405,8 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-                        color: active ? scheme.primary : scheme.onSurfaceVariant,
+                        color:
+                            active ? scheme.primary : scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -419,7 +429,8 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
 
           // ── Bottom Actions ──────────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, MediaQuery.of(context).padding.bottom + 16),
+            padding: EdgeInsets.fromLTRB(
+                16, 8, 16, MediaQuery.of(context).padding.bottom + 16),
             child: Row(
               children: [
                 if (_step > 0) ...[
@@ -430,7 +441,8 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
                         if (_step == 2) _classificationResult = null;
                       }),
                       style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         minimumSize: const Size(0, 48),
                       ),
                       child: const Text('Back'),
@@ -441,24 +453,33 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
                 Expanded(
                   flex: 2,
                   child: FilledButton(
-                    onPressed: (_canProceed && !_submitting && !_classifying) ? _nextStep : null,
+                    onPressed: (_canProceed && !_submitting && !_classifying)
+                        ? _nextStep
+                        : null,
                     style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       minimumSize: const Size(0, 48),
                     ),
                     child: _classifying
                         ? const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(width: 18, height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                              SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white)),
                               SizedBox(width: 10),
                               Text('Verifying Image...'),
                             ],
                           )
                         : _submitting
-                            ? const SizedBox(width: 20, height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white))
                             : Text(_buttonLabel),
                   ),
                 ),
@@ -529,7 +550,10 @@ class _CategoryStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Select Category',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text('What type of issue are you reporting?',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -584,11 +608,17 @@ class _LocationStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Current Location',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(
           'Your current GPS location will be used to pinpoint the issue.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: scheme.onSurfaceVariant),
         ),
         const SizedBox(height: 24),
 
@@ -621,7 +651,9 @@ class _LocationStep extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  hasGps ? Icons.gps_fixed_rounded : Icons.gps_not_fixed_rounded,
+                  hasGps
+                      ? Icons.gps_fixed_rounded
+                      : Icons.gps_not_fixed_rounded,
                   color: hasGps ? Colors.green : scheme.primary,
                   size: 28,
                 ),
@@ -670,11 +702,17 @@ class _LocationStep extends StatelessWidget {
                 ? const SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white))
                 : const Icon(Icons.my_location_rounded),
-            label: Text(locating ? 'Detecting…' : hasGps ? 'Re-detect Location' : 'Detect My Location'),
+            label: Text(locating
+                ? 'Detecting…'
+                : hasGps
+                    ? 'Re-detect Location'
+                    : 'Detect My Location'),
             style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
             ),
           ),
         ),
@@ -696,7 +734,8 @@ class _LocationStep extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Only your current GPS location is supported. Manual entry has been removed to ensure accurate complaint filing.',
-                  style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                  style:
+                      TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
                 ),
               ),
             ],
@@ -728,11 +767,17 @@ class _PhotoStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Photo Evidence',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(
           'Take a live photo of the issue.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: scheme.onSurfaceVariant),
         ),
         const SizedBox(height: 20),
 
@@ -756,7 +801,8 @@ class _PhotoStep extends StatelessWidget {
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.camera_alt_rounded, size: 40, color: scheme.primary),
+                        Icon(Icons.camera_alt_rounded,
+                            size: 40, color: scheme.primary),
                         const SizedBox(height: 8),
                         Text('Tap to take live photo',
                             style: TextStyle(
@@ -783,9 +829,11 @@ class _PhotoStep extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.check_circle_outline_rounded, color: Colors.green, size: 18),
+                const Icon(Icons.check_circle_outline_rounded,
+                    color: Colors.green, size: 18),
                 const SizedBox(width: 8),
-                const Text('Maximum 3 photos captured', style: TextStyle(fontSize: 13)),
+                const Text('Maximum 3 photos captured',
+                    style: TextStyle(fontSize: 13)),
               ],
             ),
           ),
@@ -793,7 +841,10 @@ class _PhotoStep extends StatelessWidget {
         if (photos.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text('${photos.length} Photo${photos.length > 1 ? 's' : ''} Captured',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           ...photos.asMap().entries.map((entry) {
             final idx = entry.key;
@@ -802,7 +853,8 @@ class _PhotoStep extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.3)),
+                border: Border.all(
+                    color: scheme.outlineVariant.withValues(alpha: 0.3)),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
@@ -834,7 +886,8 @@ class _PhotoStep extends StatelessWidget {
                                 color: Colors.black.withValues(alpha: 0.6),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                              child: const Icon(Icons.close_rounded,
+                                  color: Colors.white, size: 16),
                             ),
                           ),
                         ),
@@ -842,7 +895,8 @@ class _PhotoStep extends StatelessWidget {
                           top: 8,
                           left: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: Colors.black.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(100),
@@ -858,20 +912,27 @@ class _PhotoStep extends StatelessWidget {
                     ),
                     // Geo-tag bar
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       color: Colors.green.withValues(alpha: 0.08),
                       child: Row(
                         children: [
                           Icon(Icons.location_on_rounded,
                               size: 14,
-                              color: p.lat != null ? Colors.green : scheme.onSurfaceVariant),
+                              color: p.lat != null
+                                  ? Colors.green
+                                  : scheme.onSurfaceVariant),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              p.lat != null ? 'Geo-tagged: ${p.geoTag}' : 'Location not available',
+                              p.lat != null
+                                  ? 'Geo-tagged: ${p.geoTag}'
+                                  : 'Location not available',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: p.lat != null ? Colors.green : scheme.onSurfaceVariant,
+                                color: p.lat != null
+                                    ? Colors.green
+                                    : scheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -907,10 +968,16 @@ class _DetailsStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Complaint Details',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text('Please review and edit the details before submitting.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: scheme.onSurfaceVariant)),
         const SizedBox(height: 16),
         TextFormField(
           controller: descCtrl,
@@ -948,7 +1015,8 @@ class _SuccessSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.fromLTRB(24, 28, 24, MediaQuery.of(context).padding.bottom + 24),
+      padding: EdgeInsets.fromLTRB(
+          24, 28, 24, MediaQuery.of(context).padding.bottom + 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -959,11 +1027,15 @@ class _SuccessSheet extends StatelessWidget {
               color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 36),
+            child: const Icon(Icons.check_circle_rounded,
+                color: Colors.green, size: 36),
           ),
           const SizedBox(height: 16),
           Text('Complaint Submitted!',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w800)),
           if (complaintNumber != null) ...[
             const SizedBox(height: 6),
             Text('Complaint #$complaintNumber',
@@ -984,7 +1056,8 @@ class _SuccessSheet extends StatelessWidget {
             child: FilledButton(
               onPressed: onDone,
               style: FilledButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                   minimumSize: const Size(0, 48)),
               child: const Text('View My Complaints'),
             ),

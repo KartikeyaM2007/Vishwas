@@ -36,6 +36,7 @@ class AppConstants {
   static const String keyUserRole = 'user_role';
   static const String keyUserName = 'user_name';
   static const String keyUserEmail = 'user_email';
+  static const String keyCitizenId = 'citizen_id';
 
   // Pagination
   static const int pageSize = 20;

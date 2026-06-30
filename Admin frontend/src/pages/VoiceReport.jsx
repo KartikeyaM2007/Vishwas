@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Send, Loader2, MapPin, AlertTriangle } from 'lucide-react';
 import VapiVoiceReporter from '../components/VapiVoiceReporter';
@@ -80,7 +81,7 @@ const VoiceReport = () => {
           <AlertTriangle color="#6366f1" /> 
           Voice Civic Reporter
         </h1>
-        <p style={{ color: '#9ca3af' }}>
+        <p style={{ color: 'var(--text-muted)' }}>
           Describe a civic issue verbally using Vapi.ai, and Gemini will automatically extract the details, severity, and location to route it to the right department.
         </p>
       </header>
@@ -89,7 +90,7 @@ const VoiceReport = () => {
 
       <div className="glass-panel" style={{ padding: '2rem', borderRadius: '16px' }}>
         <h3 style={{ marginBottom: '1rem' }}>Transcript & Fallback Submit</h3>
-        <p style={{ color: '#9ca3af', marginBottom: '1rem', fontSize: '0.9rem' }}>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1rem', fontSize: '0.9rem' }}>
           If Vapi is offline or you prefer to test manually, you can paste the voice transcript below and submit.
         </p>
         
